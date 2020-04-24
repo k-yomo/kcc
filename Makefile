@@ -16,4 +16,4 @@ test:
 
 .PHONY: clean
 clean:
-	rm -f 9cc *.o *~ tmp*
+	rm -f kcc *.o *~ tmp*
