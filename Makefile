@@ -1,6 +1,6 @@
 CFLAGS=-std=c11 -g -static
 
-kcc: kcc.c
+main: main.c
 
 .PHONY: setup
 setup:
@@ -16,4 +16,4 @@ test:
 
 .PHONY: clean
 clean:
-	rm -f kcc *.o *~ tmp*
+	rm -f main *.o *~ tmp*
