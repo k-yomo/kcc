@@ -22,9 +22,17 @@ struct Token {
 
 Token *token;
 
-void error(char *fmt, ...) {
+char *user_input;
+
+// output error with the position where the errors occurred at
+void error_at(char *loc, char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
+
+    int pos = loc - user_input;
+    fprintf(stderr, "%s\n", user_input);
+    fprintf(stderr, "%*s", pos, ""); // output whitespaces to the position
+    fprintf(stderr, "^ ");
     vfprintf(stderr, fmt, ap);
     fprintf(stderr, "\n");
     exit(1);
@@ -41,7 +49,7 @@ bool consume(char op) {
 // move to next and return true when token is expected symbol, return false if not
 void expect(char op) {
     if (token->kind != TK_RESERVED || token->str[0] != op) {
-        error("'%c' is not '%c'", token->str[0], op);
+        error_at(token->str,"'%c' is not '%c'", token->str[0], op);
     }
     token = token->next;
 }
@@ -49,7 +57,7 @@ void expect(char op) {
 // move to next and return the number
 int expect_number() {
     if (token->kind != TK_NUM)
-        error("'%c' is not a number", token->kind);
+        error_at(token->str,"'%c' is not a number", token->kind);
     int val = token->val;
     token = token->next;
     return val;
@@ -88,7 +96,7 @@ Token *tokenize(char *p) {
             cur->val = strtol(p, &p, 10);
             continue;
         }
-        error("'%c' is not tokenizable", *p);
+        error_at(token->str, "'%c' is not tokenizable", *p);
     }
 
     new_token(TK_EOF, cur, p);
@@ -101,7 +109,8 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    token = tokenize(argv[1]);
+    user_input = argv[1];
+    token = tokenize(user_input);
 
     printf(".intel_syntax noprefix\n");
     printf(".global main\n");
