@@ -139,6 +139,8 @@ Token *tokenize(char *p) {
 static Node *expr();
 static Node *mul();
 static Node *primary();
+static Node *unary();
+static Node *primary();
 
 Node *expr() {
     Node *node = mul();
@@ -155,7 +157,7 @@ Node *expr() {
 }
 
 Node *mul() {
-    Node *node = primary();
+    Node *node = unary();
     for (;;) {
         if (consume('*')) {
             node = new_node(ND_MUL, node, primary());
@@ -164,6 +166,12 @@ Node *mul() {
         }
         return node;
     }
+}
+
+Node *unary() {
+    if (consume('-')) 
+        return new_node(ND_SUB, new_num_node(0), primary());
+    return primary();
 }
 
 Node *primary() {
